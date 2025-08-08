@@ -129,126 +129,139 @@ function App() {
   };
 
   const downloadPhotos = async () => {
-    if (capturedPhotos.length === 0 || isDownloading) return;
-    setIsDownloading(true);
-    try {
-      const holeSize = 20;
-      const framePadding = 40;
+  if (capturedPhotos.length === 0 || isDownloading) return;
+  setIsDownloading(true);
+  try {
+    const holeSize = 20;
+    const framePadding = 40;
 
-      const firstImg = new Image();
-      await new Promise<void>((resolve) => {
-        firstImg.onload = () => resolve();
-        firstImg.src = capturedPhotos[0].dataUrl;
+    const firstImg = new Image();
+    await new Promise<void>((resolve) => {
+      firstImg.onload = () => resolve();
+      firstImg.src = capturedPhotos[0].dataUrl;
+    });
+    const photoWidth = firstImg.width;
+    const photoHeight = firstImg.height;
+
+    let totalWidth = photoWidth + framePadding * 2 + holeSize * 2;
+    let totalHeight;
+
+    if (photoMode === "single") {
+      totalHeight = photoHeight + framePadding * 2;
+    } else {
+      totalHeight =
+        capturedPhotos.length * (photoHeight + framePadding) + framePadding;
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = totalWidth;
+    canvas.height = totalHeight;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Film strip background
+    ctx.fillStyle = "#111";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // White inner area
+    ctx.fillStyle = "white";
+    ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, canvas.height);
+
+    // Borders
+    const borderHeight = 16;
+    ctx.fillStyle = "#333";
+    ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, borderHeight);
+    ctx.fillRect(
+      holeSize,
+      canvas.height - borderHeight,
+      canvas.width - holeSize * 2,
+      borderHeight
+    );
+
+    // Holes
+    ctx.fillStyle = "#111";
+    const holeSpacing = totalHeight / 6;
+    for (let i = 0; i < 5; i++) {
+      ctx.beginPath();
+      ctx.arc(
+        holeSize / 2,
+        holeSpacing * (i + 1),
+        holeSize / 2,
+        0,
+        Math.PI * 2
+      );
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(
+        canvas.width - holeSize / 2,
+        holeSpacing * (i + 1),
+        holeSize / 2,
+        0,
+        Math.PI * 2
+      );
+      ctx.fill();
+    }
+
+    // Draw photos and dates
+    for (let i = 0; i < capturedPhotos.length; i++) {
+      const img = await new Promise<HTMLImageElement>((resolve) => {
+        const im = new Image();
+        im.onload = () => resolve(im);
+        im.src = capturedPhotos[i].dataUrl;
       });
-      const photoWidth = firstImg.width;
-      const photoHeight = firstImg.height;
 
-      let totalWidth = photoWidth + framePadding * 2 + holeSize * 2;
-      let totalHeight;
-
-      if (photoMode === "single") {
-        totalHeight = photoHeight + framePadding * 2;
-      } else {
-        totalHeight =
-          capturedPhotos.length * (photoHeight + framePadding) + framePadding;
-      }
-
-      const canvas = document.createElement("canvas");
-      canvas.width = totalWidth;
-      canvas.height = totalHeight;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      // Film strip background
-      ctx.fillStyle = "#111";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // White inner area
-      ctx.fillStyle = "white";
-      ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, canvas.height);
-
-      // Borders
-      const borderHeight = 16;
-      ctx.fillStyle = "#333";
-      ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, borderHeight);
-      ctx.fillRect(
-        holeSize,
-        canvas.height - borderHeight,
-        canvas.width - holeSize * 2,
-        borderHeight
+      // Draw the photo
+      ctx.drawImage(
+        img,
+        holeSize + framePadding,
+        framePadding + i * (photoHeight + framePadding),
+        photoWidth,
+        photoHeight
       );
 
-      // Holes
+      // Draw the date at top-left inside the white area, smaller and subtle
+      ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+      const fontSize = Math.floor(photoHeight * 0.035);
+      ctx.font = `${fontSize}px monospace`;
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
+
+      const dateStr = `PB (${new Date(capturedPhotos[i].timestamp).toLocaleDateString()})`;
+
+      // Draw a subtle semi-transparent white background behind text for better contrast
+      const padding = 6;
+      const textWidth = ctx.measureText(dateStr).width;
+      const textX = holeSize + framePadding + 4;
+      const textY = framePadding + i * (photoHeight + framePadding) + 4;
+
+      ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+      ctx.fillRect(textX - padding / 2, textY - padding / 2, textWidth + padding, fontSize + padding / 1.5);
+
+      // Draw the text over the background
       ctx.fillStyle = "#111";
-      const holeSpacing = totalHeight / 6;
-      for (let i = 0; i < 5; i++) {
-        ctx.beginPath();
-        ctx.arc(
-          holeSize / 2,
-          holeSpacing * (i + 1),
-          holeSize / 2,
-          0,
-          Math.PI * 2
-        );
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.arc(
-          canvas.width - holeSize / 2,
-          holeSpacing * (i + 1),
-          holeSize / 2,
-          0,
-          Math.PI * 2
-        );
-        ctx.fill();
-      }
-
-      for (let i = 0; i < capturedPhotos.length; i++) {
-        const img = await new Promise<HTMLImageElement>((resolve) => {
-          const im = new Image();
-          im.onload = () => resolve(im);
-          im.src = capturedPhotos[i].dataUrl;
-        });
-
-        ctx.drawImage(
-          img,
-          holeSize + framePadding,
-          framePadding + i * (photoHeight + framePadding),
-          photoWidth,
-          photoHeight
-        );
-
-        ctx.fillStyle = "rgba(0,0,0,0.6)";
-        ctx.font = `${Math.floor(photoHeight * 0.05)}px monospace`;
-        ctx.textAlign = "center";
-        ctx.fillText(
-          new Date(capturedPhotos[i].timestamp).toLocaleDateString(),
-          canvas.width / 2,
-          framePadding +
-            i * (photoHeight + framePadding) +
-            photoHeight +
-            Math.floor(photoHeight * 0.06)
-        );
-      }
-
-      const finalDataUrl = canvas.toDataURL("image/jpeg", 1.0);
-      const link = document.createElement("a");
-      link.href = finalDataUrl;
-      link.download = `photo-booth-${photoMode}-${Date.now()}.jpg`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      setTimeout(() => {
-        resetApp();
-      }, 1000);
-    } catch (err) {
-      console.error("Download error:", err);
-      alert("Download failed");
-    } finally {
-      setIsDownloading(false);
+      ctx.fillText(dateStr, textX, textY);
     }
-  };
+
+    const finalDataUrl = canvas.toDataURL("image/jpeg", 1.0);
+    const link = document.createElement("a");
+    link.href = finalDataUrl;
+    link.download = `photo-booth-${photoMode}-${Date.now()}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    setTimeout(() => {
+      resetApp();
+    }, 1000);
+  } catch (err) {
+    console.error("Download error:", err);
+    alert("Download failed");
+  } finally {
+    setIsDownloading(false);
+  }
+};
+
 
   const FilmStripPreview = () => (
     <div className="bg-gray-900 p-4 rounded-lg shadow-2xl max-w-md mx-auto">
