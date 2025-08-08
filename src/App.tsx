@@ -227,7 +227,10 @@ function App() {
       ctx.textAlign = "left";
       ctx.textBaseline = "top";
 
-      const dateStr = `PhotoBooth (${new Date(capturedPhotos[i].timestamp).toLocaleDateString()})`;
+     const date = new Date(capturedPhotos[i].timestamp);
+     const dateStr = `PhotoBooth ${date.getMonth() +   1}.${date.getDate()}.${String(date.getFullYear()).slice(-2)}`;
+console.log(dateStr);
+
 
 
       const padding = 6;
