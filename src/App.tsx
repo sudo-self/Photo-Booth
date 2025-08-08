@@ -68,9 +68,18 @@ function App() {
     canvas.height = video.videoHeight;
     const ctx = canvas.getContext("2d");
     if (!ctx) return null;
+    
+    // Save the current context state
+    ctx.save();
+    
+    // Mirror the image
     ctx.translate(canvas.width, 0);
     ctx.scale(-1, 1);
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    // Restore the context state
+    ctx.restore();
+    
     return canvas.toDataURL("image/jpeg", 0.9);
   };
 
@@ -120,131 +129,126 @@ function App() {
   };
 
   const downloadPhotos = async () => {
-  if (capturedPhotos.length === 0 || isDownloading) return;
-  setIsDownloading(true);
-  try {
-    const holeSize = 20; 
-    const framePadding = 40;
+    if (capturedPhotos.length === 0 || isDownloading) return;
+    setIsDownloading(true);
+    try {
+      const holeSize = 20;
+      const framePadding = 40;
 
-   
-    const firstImg = new Image();
-    await new Promise<void>((resolve) => {
-      firstImg.onload = () => resolve();
-      firstImg.src = capturedPhotos[0].dataUrl;
-    });
-    const photoWidth = firstImg.width;
-    const photoHeight = firstImg.height;
-
-    let totalWidth = photoWidth + framePadding * 2 + holeSize * 2;
-    let totalHeight;
-
-    if (photoMode === "single") {
-      totalHeight = photoHeight + framePadding * 2;
-    } else {
-      totalHeight =
-        capturedPhotos.length * (photoHeight + framePadding) + framePadding;
-    }
-
-    const canvas = document.createElement("canvas");
-    canvas.width = totalWidth;
-    canvas.height = totalHeight;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    // Film strip background
-    ctx.fillStyle = "#111";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // White inner area
-    ctx.fillStyle = "white";
-    ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, canvas.height);
-
-    // Borders
-    const borderHeight = 16;
-    ctx.fillStyle = "#333";
-    ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, borderHeight);
-    ctx.fillRect(
-      holeSize,
-      canvas.height - borderHeight,
-      canvas.width - holeSize * 2,
-      borderHeight
-    );
-
-
-    ctx.fillStyle = "#111";
-    const holeSpacing = totalHeight / 6;
-    for (let i = 0; i < 5; i++) {
-      ctx.beginPath();
-      ctx.arc(
-        holeSize / 2,
-        holeSpacing * (i + 1),
-        holeSize / 2,
-        0,
-        Math.PI * 2
-      );
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.arc(
-        canvas.width - holeSize / 2,
-        holeSpacing * (i + 1),
-        holeSize / 2,
-        0,
-        Math.PI * 2
-      );
-      ctx.fill();
-    }
-
- 
-    for (let i = 0; i < capturedPhotos.length; i++) {
-      const img = await new Promise<HTMLImageElement>((resolve) => {
-        const im = new Image();
-        im.onload = () => resolve(im);
-        im.src = capturedPhotos[i].dataUrl;
+      const firstImg = new Image();
+      await new Promise<void>((resolve) => {
+        firstImg.onload = () => resolve();
+        firstImg.src = capturedPhotos[0].dataUrl;
       });
+      const photoWidth = firstImg.width;
+      const photoHeight = firstImg.height;
 
-      ctx.drawImage(
-        img,
-        holeSize + framePadding,
-        framePadding + i * (photoHeight + framePadding),
-        photoWidth,
-        photoHeight
+      let totalWidth = photoWidth + framePadding * 2 + holeSize * 2;
+      let totalHeight;
+
+      if (photoMode === "single") {
+        totalHeight = photoHeight + framePadding * 2;
+      } else {
+        totalHeight =
+          capturedPhotos.length * (photoHeight + framePadding) + framePadding;
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = totalWidth;
+      canvas.height = totalHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      // Film strip background
+      ctx.fillStyle = "#111";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // White inner area
+      ctx.fillStyle = "white";
+      ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, canvas.height);
+
+      // Borders
+      const borderHeight = 16;
+      ctx.fillStyle = "#333";
+      ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, borderHeight);
+      ctx.fillRect(
+        holeSize,
+        canvas.height - borderHeight,
+        canvas.width - holeSize * 2,
+        borderHeight
       );
 
-    
-      ctx.fillStyle = "rgba(0,0,0,0.6)";
-      ctx.font = ${Math.floor(photoHeight * 0.05)}px monospace; 
-      ctx.textAlign = "center";
-      ctx.fillText(
-        newDate(capturedPhotos[i].timestamp).toLocaleDateString(),
-        canvas.width / 2,
-        framePadding +
-          i * (photoHeight + framePadding) +
-          photoHeight +
-          Math.floor(photoHeight * 0.06)
-      );
+      // Holes
+      ctx.fillStyle = "#111";
+      const holeSpacing = totalHeight / 6;
+      for (let i = 0; i < 5; i++) {
+        ctx.beginPath();
+        ctx.arc(
+          holeSize / 2,
+          holeSpacing * (i + 1),
+          holeSize / 2,
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(
+          canvas.width - holeSize / 2,
+          holeSpacing * (i + 1),
+          holeSize / 2,
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
+      }
+
+      for (let i = 0; i < capturedPhotos.length; i++) {
+        const img = await new Promise<HTMLImageElement>((resolve) => {
+          const im = new Image();
+          im.onload = () => resolve(im);
+          im.src = capturedPhotos[i].dataUrl;
+        });
+
+        ctx.drawImage(
+          img,
+          holeSize + framePadding,
+          framePadding + i * (photoHeight + framePadding),
+          photoWidth,
+          photoHeight
+        );
+
+        ctx.fillStyle = "rgba(0,0,0,0.6)";
+        ctx.font = `${Math.floor(photoHeight * 0.05)}px monospace`;
+        ctx.textAlign = "center";
+        ctx.fillText(
+          new Date(capturedPhotos[i].timestamp).toLocaleDateString(),
+          canvas.width / 2,
+          framePadding +
+            i * (photoHeight + framePadding) +
+            photoHeight +
+            Math.floor(photoHeight * 0.06)
+        );
+      }
+
+      const finalDataUrl = canvas.toDataURL("image/jpeg", 1.0);
+      const link = document.createElement("a");
+      link.href = finalDataUrl;
+      link.download = `photo-booth-${photoMode}-${Date.now()}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      setTimeout(() => {
+        resetApp();
+      }, 1000);
+    } catch (err) {
+      console.error("Download error:", err);
+      alert("Download failed");
+    } finally {
+      setIsDownloading(false);
     }
-
-    const finalDataUrl = canvas.toDataURL("image/jpeg", 1.0); 
-    const link = document.createElement("a");
-    link.href = finalDataUrl;
-    link.download = photo-booth-${photoMode}-${Date.now()}.jpg;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
- setTimeout(() => {
-      resetApp();
-    }, 1000);
-
-  } catch (err) {
-    console.error("Download error:", err);
-    alert("Download failed");
-  } finally {
-    setIsDownloading(false);
-  }
-};
-
-
+  };
 
   const FilmStripPreview = () => (
     <div className="bg-gray-900 p-4 rounded-lg shadow-2xl max-w-md mx-auto">
@@ -253,14 +257,13 @@ function App() {
           <img
             key={i}
             src={p.dataUrl}
-            alt={Photo ${i + 1}}
+            alt={`Photo ${i + 1}`}
             className="w-full object-contain rounded"
           />
         ))}
       </div>
     </div>
   );
-
 
   const resetApp = () => {
     if (streamRef.current) {
@@ -350,7 +353,6 @@ function App() {
               </div>
             </button>
           </div>
-
         </div>
       </div>
     );
@@ -360,7 +362,6 @@ function App() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-lg">
-
           <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-black">
             <video
               ref={videoRef}
@@ -385,9 +386,9 @@ function App() {
             <button
               disabled={isCapturing}
               onClick={startCountdown}
-              className={w-20 h-20 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full hover:scale-110 active:scale-95 transition-all duration-200 shadow-lg flex items-center justify-center ${
+              className={`w-20 h-20 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full hover:scale-110 active:scale-95 transition-all duration-200 shadow-lg flex items-center justify-center ${
                 isCapturing ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
-              }}
+              }`}
               aria-label="Take photo"
             >
               <Camera className="w-8 h-8 text-white" />
@@ -404,37 +405,34 @@ function App() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-lg space-y-8">
-
           <FilmStripPreview />
 
           <div className="flex justify-center space-x-4">
-           <button
-  onClick={downloadPhotos}
-  disabled={isDownloading}
-  className="group relative inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 rounded-full hover:scale-110 active:scale-95 transition-all duration-300 shadow-2xl hover:shadow-purple-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
->
-  {isDownloading ? (
-    <svg className="w-10 h-10 text-white animate-spin" viewBox="0 0 24 24" fill="none">
-      <circle
-        className="opacity-25"
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        strokeWidth="4"
-      ></circle>
-      <path
-        className="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8v4l3.5-3.5L12 0v4a8 8 0 110 16v-4l-3.5 3.5L12 24v-4a8 8 0 01-8-8z"
-      ></path>
-    </svg>
-  ) : (
-    <Download className="w-10 h-10 text-white relative z-10" />
-  )}
-</button>
-
-            
+            <button
+              onClick={downloadPhotos}
+              disabled={isDownloading}
+              className="group relative inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 rounded-full hover:scale-110 active:scale-95 transition-all duration-300 shadow-2xl hover:shadow-purple-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isDownloading ? (
+                <svg className="w-10 h-10 text-white animate-spin" viewBox="0 0 24 24" fill="none">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4l3.5-3.5L12 0v4a8 8 0 110 16v-4l-3.5 3.5L12 24v-4a8 8 0 01-8-8z"
+                  ></path>
+                </svg>
+              ) : (
+                <Download className="w-10 h-10 text-white relative z-10" />
+              )}
+            </button>
           </div>
         </div>
       </div>
