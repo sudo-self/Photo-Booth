@@ -225,7 +225,7 @@ function App() {
       const fontSize = Math.floor(photoHeight * 0.035);
       ctx.font = `${fontSize}px monospace`;
       ctx.textAlign = "left";
-      ctx.textBaseline = "bottom";
+      ctx.textBaseline = "top";
 
       const dateStr = `PhotoBooth (${new Date(capturedPhotos[i].timestamp).toLocaleDateString()})`;
 
