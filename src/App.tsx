@@ -27,24 +27,36 @@ function App() {
 
     const startCamera = async () => {
       try {
-        const mediaStream = await navigator.mediaDevices.getUserMedia({
+        const constraints = {
           video: {
             facingMode: "user",
             width: { ideal: 1280 },
-            height: { ideal: 720 },
+            height: { ideal: 720 }
           },
-          audio: false,
-        });
+          audio: false
+        };
+
+        console.log("Requesting camera with constraints:", constraints);
+        const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+        console.log("Got media stream:", mediaStream);
+        
         streamRef.current = mediaStream;
         if (videoRef.current) {
+          console.log("Attaching stream to video element");
           videoRef.current.srcObject = mediaStream;
           videoRef.current.onloadedmetadata = () => {
-            videoRef.current?.play().catch(console.error);
+            console.log("Video metadata loaded");
+            videoRef.current?.play().catch(err => {
+              console.error("Error playing video:", err);
+            });
+          };
+          videoRef.current.onerror = (err) => {
+            console.error("Video error:", err);
           };
         }
       } catch (err) {
         console.error("Camera error:", err);
-        alert("Unable to access camera");
+        alert("Unable to access camera. Please make sure you've granted camera permissions.");
         setState("frame-selection");
       }
     };
@@ -53,8 +65,15 @@ function App() {
 
     return () => {
       if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop());
+        console.log("Cleaning up camera stream");
+        streamRef.current.getTracks().forEach((track) => {
+          track.stop();
+          console.log("Stopped track:", track.kind);
+        });
         streamRef.current = null;
+      }
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
       }
     };
   }, [state]);
@@ -370,11 +389,10 @@ function App() {
     );
   }
 
-  if (state === "camera") {
+ if (state === "camera") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-lg">
-
           <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-black">
             <video
               ref={videoRef}
