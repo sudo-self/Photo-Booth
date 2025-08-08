@@ -348,6 +348,10 @@ const FilmStripPreview = () => {
   }
 
   if (state === "frame-selection") {
+
+
+function FrameSelection({ setPhotoMode, setState }) {
+  if (true) { // assuming state === "frame-selection"
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
         <div className="w-full max-w-4xl">
@@ -357,6 +361,7 @@ const FilmStripPreview = () => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
+            {/* Single Button */}
             <button
               onClick={() => {
                 setPhotoMode("single");
@@ -366,7 +371,22 @@ const FilmStripPreview = () => {
             >
               <div className="flex flex-col items-center space-y-6">
                 <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 to-green-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <Camera className="w-8 h-8 text-white" />
+                  {/* Inline Single SVG */}
+                  <svg
+                    version="1.1"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 313 313"
+                    fill="white"
+                    className="w-8 h-8"
+                  >
+                    <g>
+                      <path d="M283,3H30C13.458,3,0,16.458,0,33v247c0,16.542,13.458,30,30,30h253c16.542,0,30-13.458,30-30V33
+                        C313,16.458,299.542,3,283,3z M283,33l0.01,131.228l-50.683-47.598c-3.544-3.327-8.083-5.159-12.78-5.159
+                        c-5.715,0-11.063,2.681-14.673,7.354l-59.663,77.256c-1.934,2.504-5.036,3.999-8.299,3.999c-2.223,0-4.324-0.676-6.076-1.956
+                        l-38.773-28.316c-3.862-2.821-8.865-4.374-14.085-4.374c-5.945,0-11.504,1.938-15.65,5.456L30,198.31V33H283z"/>
+                      <path d="M115,122c17.093,0,31-13.907,31-31s-13.907-31-31-31S84,73.907,84,91S97.907,122,115,122z"/>
+                    </g>
+                  </svg>
                 </div>
                 <div className="text-center">
                   <h3 className="text-3xl font-bold text-white mb-2">Single</h3>
@@ -375,6 +395,7 @@ const FilmStripPreview = () => {
               </div>
             </button>
 
+            {/* Burst Button */}
             <button
               onClick={() => {
                 setPhotoMode("triple");
@@ -384,11 +405,29 @@ const FilmStripPreview = () => {
             >
               <div className="flex flex-col items-center space-y-6">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <div className="grid grid-cols-1 gap-1">
-                    <div className="w-6 h-2 bg-white rounded-sm"></div>
-                    <div className="w-6 h-2 bg-white rounded-sm"></div>
-                    <div className="w-6 h-2 bg-white rounded-sm"></div>
-                  </div>
+                  {/* Inline Burst SVG */}
+                  <svg
+                    version="1.1"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 391.377 391.377"
+                    fill="white"
+                    className="w-8 h-8"
+                  >
+                    <g>
+                      <path d="M387.456,91.78c-3.739-6.178-9.648-10.526-16.638-12.245L162.499,28.298c-2.106-0.519-4.27-0.781-6.433-0.781
+                        c-12.471,0-23.259,8.45-26.235,20.551l-6.271,25.498L19.405,106.616c-13.918,4.416-22.089,18.982-18.602,33.163l50.1,203.696
+                        c1.733,7.046,6.122,12.958,12.358,16.647c4.182,2.474,8.837,3.737,13.564,3.737c2.324,0,4.667-0.306,6.977-0.923l160.436-42.907
+                        l63.58,15.638c2.106,0.519,4.271,0.781,6.435,0.781c12.471,0,23.259-8.451,26.233-20.55l50.102-203.698
+                        C392.307,105.211,391.195,97.959,387.456,91.78z M79.246,333.102L30.421,134.595l84.742-26.89L79.732,251.763
+                        c-1.721,6.99-0.608,14.243,3.131,20.422c3.738,6.178,9.646,10.527,16.639,12.247l84.249,20.721L79.246,333.102z M335.706,209.731
+                        l-28.492-43.88c-3.492-5.379-9.295-8.59-15.523-8.59c-4.229,0-8.271,1.438-11.69,4.157l-60.656,48.255
+                        c-1.82,1.449-4.045,2.215-6.434,2.215c-3.137,0-6.058-1.336-8.014-3.663l-22.981-27.35c-4.406-5.242-11.464-8.372-18.879-8.372
+                        c-3.661,0-7.207,0.803-10.254,2.32l-26.477,13.193l31.942-129.871L360.74,107.95L335.706,209.731z"/>
+                      <path d="M207.988,145.842c2.114,0.52,4.282,0.783,6.442,0.783c12.406,0,23.143-8.423,26.109-20.483
+                        c3.542-14.405-5.295-29.008-19.7-32.552c-2.114-0.52-4.282-0.783-6.442-0.783c-12.406,0-23.143,8.423-26.109,20.483
+                        C184.746,127.695,193.583,142.298,207.988,145.842z"/>
+                    </g>
+                  </svg>
                 </div>
                 <div className="text-center">
                   <h3 className="text-3xl font-bold text-white mb-2">Burst</h3>
