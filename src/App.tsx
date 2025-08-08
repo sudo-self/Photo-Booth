@@ -203,7 +203,7 @@ function App() {
       ctx.fill();
     }
 
-    // Draw photos and dates
+   
     for (let i = 0; i < capturedPhotos.length; i++) {
       const img = await new Promise<HTMLImageElement>((resolve) => {
         const im = new Image();
@@ -211,7 +211,7 @@ function App() {
         im.src = capturedPhotos[i].dataUrl;
       });
 
-      // Draw the photo
+
       ctx.drawImage(
         img,
         holeSize + framePadding,
@@ -220,16 +220,16 @@ function App() {
         photoHeight
       );
 
-      // Draw the date at top-left inside the white area, smaller and subtle
+
       ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
       const fontSize = Math.floor(photoHeight * 0.035);
       ctx.font = `${fontSize}px monospace`;
       ctx.textAlign = "left";
       ctx.textBaseline = "top";
 
-      const dateStr = `PB (${new Date(capturedPhotos[i].timestamp).toLocaleDateString()})`;
+      const dateStr = `PhotoBooth (${new Date(capturedPhotos[i].timestamp).toLocaleDateString()})`;
 
-      // Draw a subtle semi-transparent white background behind text for better contrast
+
       const padding = 6;
       const textWidth = ctx.measureText(dateStr).width;
       const textX = holeSize + framePadding + 4;
@@ -238,7 +238,6 @@ function App() {
       ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
       ctx.fillRect(textX - padding / 2, textY - padding / 2, textWidth + padding, fontSize + padding / 1.5);
 
-      // Draw the text over the background
       ctx.fillStyle = "#111";
       ctx.fillText(dateStr, textX, textY);
     }
