@@ -194,7 +194,7 @@ const downloadPhotos = async () => {
       ctx.fill();
     }
 
-    // Draw photos and dates
+
     for (let i = 0; i < capturedPhotos.length; i++) {
       const img = await new Promise<HTMLImageElement>((resolve) => {
         const im = new Image();
