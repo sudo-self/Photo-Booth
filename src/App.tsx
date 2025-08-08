@@ -206,7 +206,7 @@ function App() {
         );
 
         const date = new Date(capturedPhotos[i].timestamp);
-        const dateStr = `bolt-booth.netlify.app ${date.getMonth() + 1}.${date.getDate()}.${String(date.getFullYear()).slice(-2)}`;
+        const dateStr = `${date.getMonth() + 1}.${date.getDate()}.${String(date.getFullYear()).slice(-2)}`;
 
         const fontSize = Math.floor(photoHeight * 0.035);
         ctx.font = `${fontSize}px monospace`;
