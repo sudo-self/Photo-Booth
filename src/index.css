@@ -104,7 +104,7 @@
 
 .film-strip {
   position: relative;
-  background: linear-gradient(to bottom, #1a1a1a 0%, #0a0a0a 100%);
+  background: linear-gradient(to bottom, #000000 0%, #050505 100%);
   padding: 10px;
   border-radius: 12px;
 }
@@ -119,8 +119,8 @@
     to bottom,
     transparent 0px,
     transparent 10px,
-    #000 10px,
-    #000 20px
+    #000000 10px,
+    #000000 20px
   );
 }
 
@@ -134,17 +134,14 @@
   top: 0;
 }
 
-
 @media (max-width: 640px) {
   .shiny-text {
     font-size: 3rem;
   }
-  
+
   .film-strip {
     max-width: 90vw;
   }
-}
-
 
 @media (prefers-reduced-motion: reduce) {
   .shiny-text {
