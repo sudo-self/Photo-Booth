@@ -167,7 +167,7 @@ function App() {
     ctx.fillStyle = "white";
     ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, canvas.height);
 
-    // Borders
+ 
     const borderHeight = 16;
     ctx.fillStyle = "#333";
     ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, borderHeight);
@@ -178,7 +178,7 @@ function App() {
       borderHeight
     );
 
-    // Holes
+
     ctx.fillStyle = "#111";
     const holeSpacing = totalHeight / 6;
     for (let i = 0; i < 5; i++) {
