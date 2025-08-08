@@ -159,15 +159,15 @@ function App() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-
+    // Draw outer black background
     ctx.fillStyle = "#111";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-
+    // Draw white inner background
     ctx.fillStyle = "white";
     ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, canvas.height);
 
- 
+    // Draw grey top and bottom borders
     const borderHeight = 16;
     ctx.fillStyle = "#ccc";
     ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, borderHeight);
@@ -178,18 +178,12 @@ function App() {
       borderHeight
     );
 
-
+    // Draw holes on left and right edges
     ctx.fillStyle = "#111";
     const holeSpacing = totalHeight / 6;
     for (let i = 0; i < 5; i++) {
       ctx.beginPath();
-      ctx.arc(
-        holeSize / 2,
-        holeSpacing * (i + 1),
-        holeSize / 2,
-        0,
-        Math.PI * 2
-      );
+      ctx.arc(holeSize / 2, holeSpacing * (i + 1), holeSize / 2, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.beginPath();
@@ -203,14 +197,13 @@ function App() {
       ctx.fill();
     }
 
-   
+    // Draw each photo and overlay date text with black bg and light grey monospace font
     for (let i = 0; i < capturedPhotos.length; i++) {
       const img = await new Promise<HTMLImageElement>((resolve) => {
         const im = new Image();
         im.onload = () => resolve(im);
         im.src = capturedPhotos[i].dataUrl;
       });
-
 
       ctx.drawImage(
         img,
@@ -220,31 +213,37 @@ function App() {
         photoHeight
       );
 
+      // Prepare date string "PhotoBooth 8.25.25"
+      const date = new Date(capturedPhotos[i].timestamp);
+      const dateStr = `PhotoBooth ${date.getMonth() + 1}.${date.getDate()}.${String(
+        date.getFullYear()
+      ).slice(-2)}`;
 
-      ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
       const fontSize = Math.floor(photoHeight * 0.035);
       ctx.font = `${fontSize}px monospace`;
       ctx.textAlign = "left";
       ctx.textBaseline = "top";
-
-     const date = new Date(capturedPhotos[i].timestamp);
-     const dateStr = `PhotoBooth ${date.getMonth() +   1}.${date.getDate()}.${String(date.getFullYear()).slice(-2)}`;
-console.log(dateStr);
-
-
 
       const padding = 6;
       const textWidth = ctx.measureText(dateStr).width;
       const textX = holeSize + framePadding + 4;
       const textY = framePadding + i * (photoHeight + framePadding) + 4;
 
-      ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
-      ctx.fillRect(textX - padding / 2, textY - padding / 2, textWidth + padding, fontSize + padding / 1.5);
+      // Draw black semi-transparent background behind text
+      ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+      ctx.fillRect(
+        textX - padding / 2,
+        textY - padding / 2,
+        textWidth + padding,
+        fontSize + padding / 1.5
+      );
 
-      ctx.fillStyle = "#111";
+      // Draw light grey text
+      ctx.fillStyle = "#ccc";
       ctx.fillText(dateStr, textX, textY);
     }
 
+    // Export image and trigger download
     const finalDataUrl = canvas.toDataURL("image/jpeg", 1.0);
     const link = document.createElement("a");
     link.href = finalDataUrl;
