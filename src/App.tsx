@@ -69,7 +69,7 @@ function App() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return null;
     ctx.translate(canvas.width, 0);
-    ctx.scale(-1, 1); // mirror horizontally
+    ctx.scale(-1, 1);
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     return canvas.toDataURL("image/jpeg", 0.9);
   };
@@ -88,7 +88,7 @@ function App() {
       setCountdown(null);
       await new Promise((r) => setTimeout(r, 200));
 
-      // Flash effect
+      // Flash
       const flashDiv = document.createElement("div");
       flashDiv.style.position = "fixed";
       flashDiv.style.top = "0";
@@ -225,7 +225,7 @@ function App() {
       );
     }
 
-    const finalDataUrl = canvas.toDataURL("image/jpeg", 1.0); // full quality
+    const finalDataUrl = canvas.toDataURL("image/jpeg", 1.0); 
     const link = document.createElement("a");
     link.href = finalDataUrl;
     link.download = `photo-booth-${photoMode}-${Date.now()}.jpg`;
@@ -362,10 +362,10 @@ function App() {
         <div className="w-full max-w-lg">
          {!isCapturing && (
   <div className="text-center mb-6">
-    <h2 className="text-2xl font-bold text-white mb-2">
-      {photoMode === "single" ? "Get Ready..." : "Get Ready... "}
+    <h2 className="text-2xl font-bold text-indigo-500 mb-2">
+      {photoMode === "single" ? "Get Ready" : "Get Ready"}
     </h2>
-    <p className="text-purple-200">
+    <p className="text-indigo-500">
       {photoMode === "triple" ? "📷" : "📷"}
     </p>
   </div>
