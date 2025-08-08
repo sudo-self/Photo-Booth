@@ -35,7 +35,7 @@
     }
   }
 
-  /* Custom scrollbar */
+
   ::-webkit-scrollbar {
     width: 8px;
   }
@@ -52,7 +52,7 @@
     @apply bg-purple-500;
   }
 
-  /* Smooth focus transitions */
+
   button:focus {
     outline: none;
   }
@@ -61,7 +61,7 @@
     @apply ring-4 ring-purple-500/50 ring-offset-2 ring-offset-purple-900;
   }
 
-  /* Custom button animations */
+
   .btn-pulse {
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
@@ -76,7 +76,7 @@
   }
 }
 
-/* Loading animation for camera */
+
 .camera-loading {
   position: relative;
 }
@@ -101,11 +101,11 @@
   }
 }
 
-/* Film strip effect */
+
 .film-strip {
   position: relative;
   background: linear-gradient(to bottom, #1a1a1a 0%, #0a0a0a 100%);
-  padding: 8px;
+  padding: 10px;
   border-radius: 12px;
 }
 
@@ -134,7 +134,7 @@
   top: 0;
 }
 
-/* Enhanced mobile responsiveness */
+
 @media (max-width: 640px) {
   .shiny-text {
     font-size: 3rem;
@@ -145,7 +145,7 @@
   }
 }
 
-/* Accessibility improvements */
+
 @media (prefers-reduced-motion: reduce) {
   .shiny-text {
     animation: none;
@@ -160,7 +160,7 @@
   }
 }
 
-/* High contrast mode support */
+
 @media (prefers-contrast: high) {
   .bg-gradient-to-br {
     background: #000 !important;
