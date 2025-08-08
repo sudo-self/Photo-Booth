@@ -251,7 +251,7 @@ function App() {
             <h1 className="shiny-text text-6xl md:text-8xl font-bold text-white mb-2 tracking-tight">
               Photo Booth
             </h1>
-            <p className="text-xl text-purple-200 font-light">capture the memories</p>
+            <p className="text-xl text-purple-200 font-light">capture the moment</p>
           </div>
 
           <div className="flex justify-center">
