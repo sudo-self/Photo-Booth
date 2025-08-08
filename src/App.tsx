@@ -226,9 +226,6 @@ function App() {
     </div>
   );
 
-  // Download single or strip (same as before, omitted here for brevity, keep your original)
-
-  // FilmStripPreview component (same as before, keep your original with minor fixes)
 
   const resetApp = () => {
     if (streamRef.current) {
