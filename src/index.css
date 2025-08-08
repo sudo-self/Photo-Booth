@@ -7,23 +7,30 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: #0f172a;
+    color: #e0e7ff;
+    margin: 0;
   }
 }
 
+
 @layer components {
+
   .shiny-text {
     background: linear-gradient(
       45deg,
-      #ffffff 25%,
-      #e0e7ff 50%,
-      #c7d2fe 75%,
-      #ffffff 100%
+      #ffffff 20%,
+      #a5b4fc 50%,
+      #6366f1 75%,
+      #ffffff 90%
     );
     background-size: 200% 200%;
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: shine 3s ease-in-out infinite;
+    animation: shine 3.5s ease-in-out infinite;
+    font-weight: 700;
+    user-select: none;
   }
 
   @keyframes shine {
@@ -35,35 +42,39 @@
     }
   }
 
-  /* Scrollbar styling */
+
   ::-webkit-scrollbar {
     width: 8px;
+    height: 8px;
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-gray-800;
+    background-color: #1e293b;
+    border-radius: 9999px;
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-purple-600 rounded-full;
+    background-color: #7c3aed;
+    border-radius: 9999px;
+    transition: background-color 0.3s ease;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-purple-500;
+    background-color: #8b5cf6;
   }
 
-  /* Button focus styles */
+
   button:focus {
     outline: none;
   }
 
   button:focus-visible {
-    @apply ring-4 ring-purple-500/50 ring-offset-2 ring-offset-purple-900;
+    @apply ring-4 ring-purple-500/60 ring-offset-2 ring-offset-slate-900;
   }
 
-  /* Pulse animation for buttons */
+
   .btn-pulse {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation: pulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
   @keyframes pulse {
@@ -71,12 +82,12 @@
       opacity: 1;
     }
     50% {
-      opacity: .8;
+      opacity: 0.85;
     }
   }
 }
 
-/* Camera loading spinner */
+
 .camera-loading {
   position: relative;
 }
@@ -90,7 +101,7 @@
   height: 40px;
   margin: -20px 0 0 -20px;
   border: 4px solid rgba(255, 255, 255, 0.2);
-  border-top-color: white;
+  border-top-color: #a5b4fc; /* purple-300 */
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -101,72 +112,72 @@
   }
 }
 
-/* Film strip styling */
+
 .film-strip {
   position: relative;
-  background: linear-gradient(to bottom, #000000 0%, #050505 100%);
-  padding: 10px;
-  border-radius: 12px;
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.85),
-              inset 0 -2px 6px rgba(0, 0, 0, 0.7);
+  background: linear-gradient(to bottom, #000000, #0f172a);
+  padding: 12px 14px;
+  border-radius: 16px;
+  box-shadow:
+    inset 0 3px 10px rgba(0, 0, 0, 0.9),
+    inset 0 -3px 8px rgba(0, 0, 0, 0.75);
+  user-select: none;
 }
 
 .film-strip::before,
 .film-strip::after {
   content: '';
   position: absolute;
-  width: 12px;
+  top: 0;
+  width: 14px;
   height: 100%;
   background: repeating-linear-gradient(
     to bottom,
-    transparent 0px,
-    transparent 10px,
-    #000000 10px,
-    #000000 20px
+    transparent 0 12px,
+    #000000 12px 16px
   );
+  border-radius: 12px;
+  pointer-events: none;
 }
 
 .film-strip::before {
   left: 0;
-  top: 0;
 }
 
 .film-strip::after {
   right: 0;
-  top: 0;
 }
 
-/* Mobile adjustments */
+
 @media (max-width: 640px) {
   .shiny-text {
-    font-size: 3rem;
+    font-size: 2.5rem;
   }
   .film-strip {
-    max-width: 90vw;
+    max-width: 95vw;
+    padding: 10px 12px;
   }
 }
 
-/* Reduce motion */
+
 @media (prefers-reduced-motion: reduce) {
   .shiny-text {
     animation: none;
-    background: white;
-    -webkit-text-fill-color: white;
+    background: #e0e7ff;
+    -webkit-text-fill-color: #e0e7ff;
   }
-  
   * {
-    animation-duration: 0.01ms !important;
+    animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-duration: 0.001ms !important;
   }
 }
 
-/* High contrast mode */
+
 @media (prefers-contrast: high) {
   .bg-gradient-to-br {
     background: #000 !important;
   }
-  
   .text-purple-200 {
     color: #fff !important;
   }
