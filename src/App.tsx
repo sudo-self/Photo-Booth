@@ -336,10 +336,10 @@ function App() {
         <div className="w-full max-w-lg">
           <div className="text-center mb-6">
             <h2 className="text-2xl font-bold text-white mb-2">
-              {photoMode === "single" ? "Get Ready..." : "Smile "}
+              {photoMode === "single" ? "Get Ready..." : "Get Ready... "}
             </h2>
             <p className="text-purple-200">
-              {photoMode === "triple" ? "Get Ready!" : "📷"}
+              {photoMode === "triple" ? "📷" : "📷"}
             </p>
           </div>
 
