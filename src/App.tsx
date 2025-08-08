@@ -386,7 +386,6 @@ function App() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-lg space-y-8">
-          <h2 className="text-4xl font-bold text-white text-center mb-6">Your Photos</h2>
 
           <FilmStripPreview />
 
