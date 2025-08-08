@@ -123,10 +123,10 @@ function App() {
   if (capturedPhotos.length === 0 || isDownloading) return;
   setIsDownloading(true);
   try {
-    const holeSize = 20; // doubled for better quality scaling
+    const holeSize = 20; 
     const framePadding = 40;
 
-    // Use the resolution from the first captured image
+   
     const firstImg = new Image();
     await new Promise<void>((resolve) => {
       firstImg.onload = () => resolve();
@@ -170,7 +170,7 @@ function App() {
       borderHeight
     );
 
-    // Film strip holes
+
     ctx.fillStyle = "#111";
     const holeSpacing = totalHeight / 6;
     for (let i = 0; i < 5; i++) {
@@ -195,7 +195,7 @@ function App() {
       ctx.fill();
     }
 
-    // Draw each photo in full resolution
+ 
     for (let i = 0; i < capturedPhotos.length; i++) {
       const img = await new Promise<HTMLImageElement>((resolve) => {
         const im = new Image();
@@ -211,9 +211,9 @@ function App() {
         photoHeight
       );
 
-      // Timestamp
+    
       ctx.fillStyle = "rgba(0,0,0,0.6)";
-      ctx.font = `${Math.floor(photoHeight * 0.05)}px monospace`; // scale font to image
+      ctx.font = `${Math.floor(photoHeight * 0.05)}px monospace`; 
       ctx.textAlign = "center";
       ctx.fillText(
         new Date(capturedPhotos[i].timestamp).toLocaleDateString(),
@@ -245,7 +245,7 @@ function App() {
 };
 
 
-  // FilmStripPreview component
+
   const FilmStripPreview = () => (
     <div className="bg-gray-900 p-4 rounded-lg shadow-2xl max-w-md mx-auto">
       <div className="bg-white p-2 rounded flex flex-col space-y-2">
