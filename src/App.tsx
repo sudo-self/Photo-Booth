@@ -336,10 +336,10 @@ function App() {
         <div className="w-full max-w-lg">
           <div className="text-center mb-6">
             <h2 className="text-2xl font-bold text-white mb-2">
-              {photoMode === "single" ? "Get Ready for Your Selfie!" : "Strike a Pose!"}
+              {photoMode === "single" ? "Get Ready!" : "Strike a Pose!"}
             </h2>
             <p className="text-purple-200">
-              {photoMode === "triple" ? "3 photos coming up" : "1 perfect shot"}
+              {photoMode === "triple" ? "Get Ready!" : "1 perfect shot"}
             </p>
           </div>
 
@@ -358,7 +358,7 @@ function App() {
             )}
             {isCapturing && !countdown && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                <div className="text-white text-2xl font-medium">Say Cheese! 📸</div>
+                <div className="text-white text-2xl font-medium">Say Cheese 🧀</div>
               </div>
             )}
           </div>
