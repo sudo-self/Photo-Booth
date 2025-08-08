@@ -274,7 +274,7 @@ function App() {
         <div className="w-full max-w-4xl">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Style Select</h2>
-            <p className="text-purple-200 text-lg">Select an experience</p>
+            <p className="text-purple-200 text-lg">choose an experience</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
