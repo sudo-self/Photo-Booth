@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Camera, Download, ArrowLeft } from "lucide-react";
+import { Camera, Download, Aperture, ArrowLeft } from "lucide-react";
 
 type AppState = "landing" | "frame-selection" | "camera" | "result";
 type PhotoMode = "single" | "triple";
@@ -307,7 +307,7 @@ function App() {
               className="group relative inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 rounded-full hover:scale-110 active:scale-95 transition-all duration-300 shadow-2xl hover:shadow-purple-500/25"
             >
               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400 to-purple-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-              <Camera className="w-10 h-10 text-white relative z-10" />
+              <Aperture className="w-10 h-10 text-white relative z-10" />
             </button>
           </div>
         </div>
