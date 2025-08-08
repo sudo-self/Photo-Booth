@@ -21,62 +21,50 @@ function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  // Start camera
-  useEffect(() => {
-    if (state !== "camera") return;
+ // Start camera
+useEffect(() => {
+  if (state !== "camera") return;
 
-    const startCamera = async () => {
-      try {
-        const constraints = {
-          video: {
-            facingMode: "user",
-            width: { ideal: 1280 },
-            height: { ideal: 720 }
-          },
-          audio: false
-        };
+  const startCamera = async () => {
+    try {
+      const constraints = {
+        video: {
+          facingMode: "user",
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        },
+        audio: false
+      };
 
-        console.log("Requesting camera with constraints:", constraints);
-        const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
-        console.log("Got media stream:", mediaStream);
-        
-        streamRef.current = mediaStream;
-        if (videoRef.current) {
-          console.log("Attaching stream to video element");
-          videoRef.current.srcObject = mediaStream;
-          videoRef.current.onloadedmetadata = () => {
-            console.log("Video metadata loaded");
-            videoRef.current?.play().catch(err => {
-              console.error("Error playing video:", err);
-            });
-          };
-          videoRef.current.onerror = (err) => {
-            console.error("Video error:", err);
-          };
-        }
-      } catch (err) {
-        console.error("Camera error:", err);
-        alert("Unable to access camera. Please make sure you've granted camera permissions.");
-        setState("frame-selection");
-      }
-    };
-
-    startCamera();
-
-    return () => {
-      if (streamRef.current) {
-        console.log("Cleaning up camera stream");
-        streamRef.current.getTracks().forEach((track) => {
-          track.stop();
-          console.log("Stopped track:", track.kind);
-        });
-        streamRef.current = null;
-      }
+      const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+      streamRef.current = mediaStream;
+      
       if (videoRef.current) {
-        videoRef.current.srcObject = null;
+        videoRef.current.srcObject = mediaStream;
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current?.play().catch(err => {
+            console.error("Error playing video:", err);
+          });
+        };
       }
-    };
-  }, [state]);
+    } catch (err) {
+      console.error("Camera error:", err);
+      alert("Unable to access camera. Please make sure you've granted camera permissions.");
+      setState("frame-selection");
+    }
+  };
+
+  startCamera();
+
+  return () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+  };
+}, [state]);
 
   // Capture one photo
   const capturePhoto = (): string | null => {
