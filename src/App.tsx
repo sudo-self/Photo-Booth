@@ -202,12 +202,12 @@ const downloadPhotos = async () => {
         im.src = capturedPhotos[i].dataUrl;
       });
 
-      // Draw the photo
+   
       const photoX = holeSize + framePadding;
       const photoY = framePadding + i * (photoHeight + framePadding);
       ctx.drawImage(img, photoX, photoY, photoWidth, photoHeight);
 
-      // Draw the date in the white space below the photo (bottom-left)
+   
       const dateStr = `Photo Booth (${new Date(capturedPhotos[i].timestamp).toLocaleDateString()})`;
 
       const fontSize = Math.floor(photoHeight * 0.035);
