@@ -273,7 +273,7 @@ function App() {
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
         <div className="w-full max-w-4xl">
           <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Choose Your Style</h2>
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Choose A Style</h2>
             <p className="text-purple-200 text-lg">Select an experience</p>
           </div>
 
