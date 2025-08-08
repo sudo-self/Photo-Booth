@@ -21,55 +21,6 @@ function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
- // Start camera
-useEffect(() => {
-  if (state !== "camera") return;
-
-  const startCamera = async () => {
-    try {
-      const constraints = {
-        video: {
-          facingMode: "user",
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        },
-        audio: false
-      };
-
-      const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
-      streamRef.current = mediaStream;
-      
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
-        videoRef.current.onloadedmetadata = () => {
-          videoRef.current?.play().catch(err => {
-            console.error("Error playing video:", err);
-          });
-        };
-      }
-import React, { useState, useRef, useEffect } from "react";
-import { Camera, Download, ArrowLeft } from "lucide-react";
-
-type AppState = "landing" | "frame-selection" | "camera" | "result";
-type PhotoMode = "single" | "triple";
-
-interface CapturedPhoto {
-  dataUrl: string;
-  timestamp: number;
-}
-
-function App() {
-  const [state, setState] = useState<AppState>("landing");
-  const [photoMode, setPhotoMode] = useState<PhotoMode>("single");
-  const [capturedPhotos, setCapturedPhotos] = useState<CapturedPhoto[]>([]);
-  const [countdown, setCountdown] = useState<number | null>(null);
-  const [isCapturing, setIsCapturing] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
-
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-
   // Start camera
   useEffect(() => {
     if (state !== "camera") return;
