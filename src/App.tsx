@@ -275,38 +275,24 @@ function App() {
     return (
       <div className="bg-gray-900 p-4 rounded-lg shadow-2xl max-w-md mx-auto">
         <div className="bg-white p-2 rounded flex flex-col space-y-2">
-          {capturedPhotos.map((p, i) => {
-           
-            if (!p.dataUrl || !p.dataUrl.startsWith("data:")) {
-              return (
-                <div
-                  key={i}
-                  className="text-red-600 font-mono text-center p-2 border rounded"
-                >
-                  Image {i + 1} failed to load.
-                </div>
-              );
-            }
-
-            return (
-              <img
-                key={i}
-                src={p.dataUrl}
-                alt={`Photo ${i + 1}`}
-                className="w-full object-contain rounded"
-                onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).src =
-                    "data:image/svg+xml;charset=UTF-8," +
-                    encodeURIComponent(
-                      `<svg width="200" height="150" xmlns="http://www.w3.org/2000/svg">
-                      <rect width="200" height="150" fill="#f87171"/>
-                      <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#fff" font-family="monospace" font-size="14">Image failed to load</text>
-                    </svg>`,
-                    );
-                }}
-              />
-            );
-          })}
+          {capturedPhotos.map((p) => (
+  <img
+    key={p.timestamp}
+    src={p.dataUrl}
+    alt={`Photo`}
+    className="w-full object-contain rounded"
+    onError={(e) => {
+      (e.currentTarget as HTMLImageElement).src =
+        "data:image/svg+xml;charset=UTF-8," +
+        encodeURIComponent(
+          `<svg width="200" height="150" xmlns="http://www.w3.org/2000/svg">
+            <rect width="200" height="150" fill="#f87171"/>
+            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#fff" font-family="monospace" font-size="14">Image failed to load</text>
+          </svg>`,
+        );
+    }}
+  />
+))}
         </div>
       </div>
     );
