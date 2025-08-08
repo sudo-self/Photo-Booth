@@ -154,17 +154,17 @@ function App() {
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
-      // Draw outer black background
+   
       ctx.fillStyle = "#111";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Draw white inner background
+    
       ctx.fillStyle = "white";
       ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, canvas.height);
 
-      // Draw grey top and bottom borders
+  
       const borderHeight = 16;
-      ctx.fillStyle = "#ccc";
+      ctx.fillStyle = "#111";
       ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, borderHeight);
       ctx.fillRect(
         holeSize,
@@ -173,7 +173,7 @@ function App() {
         borderHeight,
       );
 
-      // Draw holes on left and right edges
+    
       ctx.fillStyle = "#111";
       const holeSpacing = totalHeight / 6;
       for (let i = 0; i < 5; i++) {
@@ -198,7 +198,6 @@ function App() {
         ctx.fill();
       }
 
-      // Draw each photo and overlay date text with black bg and light grey monospace font
       for (let i = 0; i < capturedPhotos.length; i++) {
         const img = await new Promise<HTMLImageElement>((resolve) => {
           const im = new Image();
@@ -214,7 +213,7 @@ function App() {
           photoHeight,
         );
 
-        // Prepare date string "PhotoBooth 8.25.25"
+      
         const date = new Date(capturedPhotos[i].timestamp);
         const dateStr = `PhotoBooth ${date.getMonth() + 1}.${date.getDate()}.${String(
           date.getFullYear(),
@@ -230,7 +229,7 @@ function App() {
         const textX = holeSize + framePadding + 4;
         const textY = framePadding + i * (photoHeight + framePadding) + 4;
 
-        // Draw black semi-transparent background behind text
+       
         ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
         ctx.fillRect(
           textX - padding / 2,
@@ -239,12 +238,12 @@ function App() {
           fontSize + padding / 1.5,
         );
 
-        // Draw light grey text
+    
         ctx.fillStyle = "#ccc";
         ctx.fillText(dateStr, textX, textY);
       }
 
-      // Export image and trigger download
+     
       const finalDataUrl = canvas.toDataURL("image/jpeg", 1.0);
       const link = document.createElement("a");
       link.href = finalDataUrl;
@@ -277,7 +276,7 @@ function App() {
       <div className="bg-gray-900 p-4 rounded-lg shadow-2xl max-w-md mx-auto">
         <div className="bg-white p-2 rounded flex flex-col space-y-2">
           {capturedPhotos.map((p, i) => {
-            // Only render images with valid dataUrl string that starts with 'data:'
+           
             if (!p.dataUrl || !p.dataUrl.startsWith("data:")) {
               return (
                 <div
