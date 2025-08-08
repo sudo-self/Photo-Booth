@@ -182,16 +182,14 @@ function App() {
           photoHeight
         );
 
-        // Add timestamp
+        // Add timestamp with proper spacing
         ctx.fillStyle = "rgba(0,0,0,0.6)";
         ctx.font = "16px monospace";
         ctx.textAlign = "center";
         ctx.fillText(
           new Date(capturedPhotos[i].timestamp).toLocaleDateString(),
           canvas.width / 2,
-          framePadding +
-            (i + 1) * (photoHeight + framePadding) -
-            8
+          framePadding + i * (photoHeight + framePadding) + photoHeight + 16
         );
       }
 
@@ -202,6 +200,11 @@ function App() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      
+      // Auto return to start after download
+      setTimeout(() => {
+        resetApp();
+      }, 1000);
     } catch (err) {
       console.error("Download error:", err);
       alert("Download failed");
@@ -316,15 +319,6 @@ function App() {
             </button>
           </div>
 
-          <div className="text-center mt-8">
-            <button
-              onClick={() => setState("landing")}
-              className="text-purple-300 hover:text-white transition-colors duration-200 flex items-center justify-center space-x-2 mx-auto"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Back</span>
-            </button>
-          </div>
         </div>
       </div>
     );
@@ -365,21 +359,6 @@ function App() {
 
           <div className="flex justify-center mt-8 space-x-4">
             <button
-              onClick={() => {
-                // Stop stream before going back
-                if (streamRef.current) {
-                  streamRef.current.getTracks().forEach((track) => track.stop());
-                  streamRef.current = null;
-                }
-                setState("frame-selection");
-              }}
-              className="px-6 py-3 bg-gray-700 text-white font-medium rounded-xl hover:bg-gray-600 transition-colors duration-200 flex items-center space-x-2"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Back</span>
-            </button>
-
-            <button
               disabled={isCapturing}
               onClick={startCountdown}
               className={`w-20 h-20 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full hover:scale-110 active:scale-95 transition-all duration-200 shadow-lg flex items-center justify-center ${
@@ -413,13 +392,6 @@ function App() {
             >
               <Download className="w-5 h-5" />
               <span>{isDownloading ? "Downloading..." : "Download"}</span>
-            </button>
-
-            <button
-              onClick={resetApp}
-              className="px-8 py-3 bg-red-600 hover:bg-red-700 rounded-xl text-white font-semibold"
-            >
-              Restart
             </button>
           </div>
         </div>
