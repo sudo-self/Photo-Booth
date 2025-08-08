@@ -59,7 +59,7 @@ function App() {
     };
   }, [state]);
 
-  // Capture one photo
+
   const capturePhoto = (): string | null => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
@@ -69,21 +69,21 @@ function App() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return null;
     
-    // Save the current context state
+ 
     ctx.save();
     
-    // Mirror the image
+  
     ctx.translate(canvas.width, 0);
     ctx.scale(-1, 1);
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     
-    // Restore the context state
+  
     ctx.restore();
     
     return canvas.toDataURL("image/jpeg", 0.9);
   };
 
-  // Countdown capture
+
   const startCountdown = async () => {
     setIsCapturing(true);
     const photos: CapturedPhoto[] = [];
@@ -159,17 +159,17 @@ function App() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Film strip background
+
     ctx.fillStyle = "#111";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // White inner area
+
     ctx.fillStyle = "white";
     ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, canvas.height);
 
  
     const borderHeight = 16;
-    ctx.fillStyle = "#333";
+    ctx.fillStyle = "#000";
     ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, borderHeight);
     ctx.fillRect(
       holeSize,
@@ -225,7 +225,7 @@ function App() {
       const fontSize = Math.floor(photoHeight * 0.035);
       ctx.font = `${fontSize}px monospace`;
       ctx.textAlign = "left";
-      ctx.textBaseline = "top";
+      ctx.textBaseline = "bottom";
 
       const dateStr = `PhotoBooth (${new Date(capturedPhotos[i].timestamp).toLocaleDateString()})`;
 
