@@ -1,4 +1,5 @@
 # 📸 Vite Photo Booth
+### [![Netlify Status](https://api.netlify.com/api/v1/badges/cc850554-c003-4d21-bf17-9276906f5c91/deploy-status)](https://app.netlify.com/projects/vite-photo-booth/deploys)
 <a href="https://vite-photo-booth.netlify.app">vite-photo-booth.netlify.app</a>
 
 A stylish, interactive web-based photo booth built with React and TailwindCSS. Capture selfies or create a retro-style film strip experience with a single click.
