@@ -216,7 +216,7 @@ function App() {
       ctx.font = ${Math.floor(photoHeight * 0.05)}px monospace; 
       ctx.textAlign = "center";
       ctx.fillText(
-        new Date(capturedPhotos[i].timestamp).toLocaleDateString(),
+        newDate(capturedPhotos[i].timestamp).toLocaleDateString(),
         canvas.width / 2,
         framePadding +
           i * (photoHeight + framePadding) +
