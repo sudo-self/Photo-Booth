@@ -119,93 +119,131 @@ function App() {
     setIsCapturing(false);
   };
 
-  // Download single or strip
   const downloadPhotos = async () => {
-    if (capturedPhotos.length === 0 || isDownloading) return;
-    setIsDownloading(true);
-    try {
-      const holeSize = 10;
-      const framePadding = 20;
-      const photoWidth = 400;
-      const photoHeight = 300;
+  if (capturedPhotos.length === 0 || isDownloading) return;
+  setIsDownloading(true);
+  try {
+    const holeSize = 20; // doubled for better quality scaling
+    const framePadding = 40;
 
-      let totalWidth = photoWidth + framePadding * 2 + holeSize * 2;
-      let totalHeight;
+    // Use the resolution from the first captured image
+    const firstImg = new Image();
+    await new Promise<void>((resolve) => {
+      firstImg.onload = () => resolve();
+      firstImg.src = capturedPhotos[0].dataUrl;
+    });
+    const photoWidth = firstImg.width;
+    const photoHeight = firstImg.height;
 
-      if (photoMode === "single") {
-        totalHeight = photoHeight + framePadding * 2;
-      } else {
-        // Triple stacked vertically
-        totalHeight =
-          capturedPhotos.length * (photoHeight + framePadding) + framePadding;
-      }
+    let totalWidth = photoWidth + framePadding * 2 + holeSize * 2;
+    let totalHeight;
 
-      const canvas = document.createElement("canvas");
-      canvas.width = totalWidth;
-      canvas.height = totalHeight;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
+    if (photoMode === "single") {
+      totalHeight = photoHeight + framePadding * 2;
+    } else {
+      totalHeight =
+        capturedPhotos.length * (photoHeight + framePadding) + framePadding;
+    }
 
-      // Draw film strip background
-      ctx.fillStyle = "#111";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    const canvas = document.createElement("canvas");
+    canvas.width = totalWidth;
+    canvas.height = totalHeight;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-      // Draw white photo area
-      ctx.fillStyle = "white";
-      ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, canvas.height);
+    // Film strip background
+    ctx.fillStyle = "#111";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Draw top and bottom borders
-      const borderHeight = 8;
-      ctx.fillStyle = "#333";
-      ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, borderHeight); // Top border
-      ctx.fillRect(holeSize, canvas.height - borderHeight, canvas.width - holeSize * 2, borderHeight); // Bottom border
+    // White inner area
+    ctx.fillStyle = "white";
+    ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, canvas.height);
 
-      // Draw film strip holes
-      ctx.fillStyle = "#111";
-      const holeSpacing = totalHeight / 6;
-      for (let i = 0; i < 5; i++) {
-        ctx.beginPath();
-        ctx.arc(holeSize / 2, holeSpacing * (i + 1), holeSize / 2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(canvas.width - holeSize / 2, holeSpacing * (i + 1), holeSize / 2, 0, Math.PI * 2);
-        ctx.fill();
-      }
+    // Borders
+    const borderHeight = 16;
+    ctx.fillStyle = "#333";
+    ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, borderHeight);
+    ctx.fillRect(
+      holeSize,
+      canvas.height - borderHeight,
+      canvas.width - holeSize * 2,
+      borderHeight
+    );
 
-      // Draw photos
-      for (let i = 0; i < capturedPhotos.length; i++) {
-        const img = await new Promise<HTMLImageElement>((resolve) => {
-          const im = new Image();
-          im.onload = () => resolve(im);
-          im.src = capturedPhotos[i].dataUrl;
-        });
+    // Film strip holes
+    ctx.fillStyle = "#111";
+    const holeSpacing = totalHeight / 6;
+    for (let i = 0; i < 5; i++) {
+      ctx.beginPath();
+      ctx.arc(
+        holeSize / 2,
+        holeSpacing * (i + 1),
+        holeSize / 2,
+        0,
+        Math.PI * 2
+      );
+      ctx.fill();
 
-        ctx.drawImage(
-          img,
-          holeSize + framePadding,
-          framePadding + i * (photoHeight + framePadding),
-          photoWidth,
-          photoHeight
-        );
+      ctx.beginPath();
+      ctx.arc(
+        canvas.width - holeSize / 2,
+        holeSpacing * (i + 1),
+        holeSize / 2,
+        0,
+        Math.PI * 2
+      );
+      ctx.fill();
+    }
 
-        // Add timestamp with proper spacing
-        ctx.fillStyle = "rgba(0,0,0,0.6)";
-        ctx.font = "16px monospace";
-        ctx.textAlign = "center";
-        ctx.fillText(
-          new Date(capturedPhotos[i].timestamp).toLocaleDateString(),
-          canvas.width / 2,
-          framePadding + i * (photoHeight + framePadding) + photoHeight + 16
-        );
-      }
+    // Draw each photo in full resolution
+    for (let i = 0; i < capturedPhotos.length; i++) {
+      const img = await new Promise<HTMLImageElement>((resolve) => {
+        const im = new Image();
+        im.onload = () => resolve(im);
+        im.src = capturedPhotos[i].dataUrl;
+      });
 
-      const finalDataUrl = canvas.toDataURL("image/jpeg", 0.9);
-      const link = document.createElement("a");
-      link.href = finalDataUrl;
-      link.download = `photo-booth-${photoMode}-${Date.now()}.jpg`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      ctx.drawImage(
+        img,
+        holeSize + framePadding,
+        framePadding + i * (photoHeight + framePadding),
+        photoWidth,
+        photoHeight
+      );
+
+      // Timestamp
+      ctx.fillStyle = "rgba(0,0,0,0.6)";
+      ctx.font = `${Math.floor(photoHeight * 0.05)}px monospace`; // scale font to image
+      ctx.textAlign = "center";
+      ctx.fillText(
+        new Date(capturedPhotos[i].timestamp).toLocaleDateString(),
+        canvas.width / 2,
+        framePadding +
+          i * (photoHeight + framePadding) +
+          photoHeight +
+          Math.floor(photoHeight * 0.06)
+      );
+    }
+
+    const finalDataUrl = canvas.toDataURL("image/jpeg", 1.0); // full quality
+    const link = document.createElement("a");
+    link.href = finalDataUrl;
+    link.download = `photo-booth-${photoMode}-${Date.now()}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    setTimeout(() => {
+      resetApp();
+    }, 1000);
+  } catch (err) {
+    console.error("Download error:", err);
+    alert("Download failed");
+  } finally {
+    setIsDownloading(false);
+  }
+};
+
       
       // Auto return to start after download
       setTimeout(() => {
