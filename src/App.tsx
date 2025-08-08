@@ -47,24 +47,66 @@ useEffect(() => {
           });
         };
       }
-    } catch (err) {
-      console.error("Camera error:", err);
-      alert("Unable to access camera. Please make sure you've granted camera permissions.");
-      setState("frame-selection");
-    }
-  };
+import React, { useState, useRef, useEffect } from "react";
+import { Camera, Download, ArrowLeft } from "lucide-react";
 
-  startCamera();
+type AppState = "landing" | "frame-selection" | "camera" | "result";
+type PhotoMode = "single" | "triple";
 
-  return () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-    }
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
-    }
-  };
-}, [state]);
+interface CapturedPhoto {
+  dataUrl: string;
+  timestamp: number;
+}
+
+function App() {
+  const [state, setState] = useState<AppState>("landing");
+  const [photoMode, setPhotoMode] = useState<PhotoMode>("single");
+  const [capturedPhotos, setCapturedPhotos] = useState<CapturedPhoto[]>([]);
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const [isCapturing, setIsCapturing] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  // Start camera
+  useEffect(() => {
+    if (state !== "camera") return;
+
+    const startCamera = async () => {
+      try {
+        const mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: "user",
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
+          audio: false,
+        });
+        streamRef.current = mediaStream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = mediaStream;
+          videoRef.current.onloadedmetadata = () => {
+            videoRef.current?.play().catch(console.error);
+          };
+        }
+      } catch (err) {
+        console.error("Camera error:", err);
+        alert("Unable to access camera");
+        setState("frame-selection");
+      }
+    };
+
+    startCamera();
+
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+        streamRef.current = null;
+      }
+    };
+  }, [state]);
 
   // Capture one photo
   const capturePhoto = (): string | null => {
@@ -127,145 +169,131 @@ useEffect(() => {
   };
 
   const downloadPhotos = async () => {
-    if (capturedPhotos.length === 0 || isDownloading) return;
-    setIsDownloading(true);
-    try {
-      const holeSize = 20;
-      const framePadding = 40;
+  if (capturedPhotos.length === 0 || isDownloading) return;
+  setIsDownloading(true);
+  try {
+    const holeSize = 20; 
+    const framePadding = 40;
 
-      // Create a temporary image to get dimensions
-      const firstImg = new Image();
-      await new Promise<void>((resolve, reject) => {
-        firstImg.onload = () => resolve();
-        firstImg.onerror = reject;
-        firstImg.src = capturedPhotos[0].dataUrl;
-      });
-      
-      const photoWidth = firstImg.width;
-      const photoHeight = firstImg.height;
+   
+    const firstImg = new Image();
+    await new Promise<void>((resolve) => {
+      firstImg.onload = () => resolve();
+      firstImg.src = capturedPhotos[0].dataUrl;
+    });
+    const photoWidth = firstImg.width;
+    const photoHeight = firstImg.height;
 
-      let totalWidth = photoWidth + framePadding * 2 + holeSize * 2;
-      let totalHeight;
+    let totalWidth = photoWidth + framePadding * 2 + holeSize * 2;
+    let totalHeight;
 
-      if (photoMode === "single") {
-        totalHeight = photoHeight + framePadding * 2;
-      } else {
-        totalHeight =
-          capturedPhotos.length * (photoHeight + framePadding) + framePadding;
-      }
-
-      const canvas = document.createElement("canvas");
-      canvas.width = totalWidth;
-      canvas.height = totalHeight;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      // Film strip background
-      ctx.fillStyle = "#111";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // White inner area
-      ctx.fillStyle = "white";
-      ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, canvas.height);
-
-      // Borders
-      const borderHeight = 16;
-      ctx.fillStyle = "#333";
-      ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, borderHeight);
-      ctx.fillRect(
-        holeSize,
-        canvas.height - borderHeight,
-        canvas.width - holeSize * 2,
-        borderHeight
-      );
-
-      // Holes
-      ctx.fillStyle = "#111";
-      const holeSpacing = totalHeight / 6;
-      for (let i = 0; i < 5; i++) {
-        ctx.beginPath();
-        ctx.arc(
-          holeSize / 2,
-          holeSpacing * (i + 1),
-          holeSize / 2,
-          0,
-          Math.PI * 2
-        );
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.arc(
-          canvas.width - holeSize / 2,
-          holeSpacing * (i + 1),
-          holeSize / 2,
-          0,
-          Math.PI * 2
-        );
-        ctx.fill();
-      }
-
-      // Load all images first
-      const images = await Promise.all(
-        capturedPhotos.map((photo) => {
-          return new Promise<HTMLImageElement>((resolve, reject) => {
-            const img = new Image();
-            img.onload = () => resolve(img);
-            img.onerror = reject;
-            img.src = photo.dataUrl;
-          });
-        })
-      );
-
-      // Draw each image
-      for (let i = 0; i < images.length; i++) {
-        const img = images[i];
-        const photoX = holeSize + framePadding;
-        const photoY = framePadding + i * (photoHeight + framePadding);
-        ctx.drawImage(img, photoX, photoY, photoWidth, photoHeight);
-
-        const dateStr = `Photo Booth (${new Date(capturedPhotos[i].timestamp).toLocaleDateString()})`;
-
-        const fontSize = Math.floor(photoHeight * 0.035);
-        ctx.font = `${fontSize}px monospace`;
-        ctx.textAlign = "left";
-        ctx.textBaseline = "bottom";
-
-        const padding = 6;
-        const textWidth = ctx.measureText(dateStr).width;
-        const textX = photoX + 4;
-        const textY = photoY + photoHeight + framePadding - 4;
-
-        ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
-        ctx.fillRect(
-          textX - padding / 2,
-          textY - fontSize - padding / 1.5,
-          textWidth + padding,
-          fontSize + padding / 1.5
-        );
-
-        // Draw the date text
-        ctx.fillStyle = "#111";
-        ctx.fillText(dateStr, textX, textY);
-      }
-
-      const finalDataUrl = canvas.toDataURL("image/jpeg", 1.0);
-      const link = document.createElement("a");
-      link.href = finalDataUrl;
-      link.download = `photo-booth-${photoMode}-${Date.now()}.jpg`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      setTimeout(() => {
-        resetApp();
-      }, 1000);
-    } catch (err) {
-      console.error("Download error:", err);
-      alert("Download failed");
-    } finally {
-      setIsDownloading(false);
+    if (photoMode === "single") {
+      totalHeight = photoHeight + framePadding * 2;
+    } else {
+      totalHeight =
+        capturedPhotos.length * (photoHeight + framePadding) + framePadding;
     }
-  };
+
+    const canvas = document.createElement("canvas");
+    canvas.width = totalWidth;
+    canvas.height = totalHeight;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Film strip background
+    ctx.fillStyle = "#111";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // White inner area
+    ctx.fillStyle = "white";
+    ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, canvas.height);
+
+    // Borders
+    const borderHeight = 16;
+    ctx.fillStyle = "#333";
+    ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, borderHeight);
+    ctx.fillRect(
+      holeSize,
+      canvas.height - borderHeight,
+      canvas.width - holeSize * 2,
+      borderHeight
+    );
+
+
+    ctx.fillStyle = "#111";
+    const holeSpacing = totalHeight / 6;
+    for (let i = 0; i < 5; i++) {
+      ctx.beginPath();
+      ctx.arc(
+        holeSize / 2,
+        holeSpacing * (i + 1),
+        holeSize / 2,
+        0,
+        Math.PI * 2
+      );
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(
+        canvas.width - holeSize / 2,
+        holeSpacing * (i + 1),
+        holeSize / 2,
+        0,
+        Math.PI * 2
+      );
+      ctx.fill();
+    }
+
+ 
+    for (let i = 0; i < capturedPhotos.length; i++) {
+      const img = await new Promise<HTMLImageElement>((resolve) => {
+        const im = new Image();
+        im.onload = () => resolve(im);
+        im.src = capturedPhotos[i].dataUrl;
+      });
+
+      ctx.drawImage(
+        img,
+        holeSize + framePadding,
+        framePadding + i * (photoHeight + framePadding),
+        photoWidth,
+        photoHeight
+      );
+
+    
+      ctx.fillStyle = "rgba(0,0,0,0.6)";
+      ctx.font = ${Math.floor(photoHeight * 0.05)}px monospace; 
+      ctx.textAlign = "center";
+      ctx.fillText(
+        new Date(capturedPhotos[i].timestamp).toLocaleDateString(),
+        canvas.width / 2,
+        framePadding +
+          i * (photoHeight + framePadding) +
+          photoHeight +
+          Math.floor(photoHeight * 0.06)
+      );
+    }
+
+    const finalDataUrl = canvas.toDataURL("image/jpeg", 1.0); 
+    const link = document.createElement("a");
+    link.href = finalDataUrl;
+    link.download = photo-booth-${photoMode}-${Date.now()}.jpg;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+ setTimeout(() => {
+      resetApp();
+    }, 1000);
+
+  } catch (err) {
+    console.error("Download error:", err);
+    alert("Download failed");
+  } finally {
+    setIsDownloading(false);
+  }
+};
+
+
 
   const FilmStripPreview = () => (
     <div className="bg-gray-900 p-4 rounded-lg shadow-2xl max-w-md mx-auto">
@@ -274,14 +302,14 @@ useEffect(() => {
           <img
             key={i}
             src={p.dataUrl}
-            alt={`Photo ${i + 1}`}
+            alt={Photo ${i + 1}}
             className="w-full object-contain rounded"
-            crossOrigin="anonymous"
           />
         ))}
       </div>
     </div>
   );
+
 
   const resetApp = () => {
     if (streamRef.current) {
@@ -377,10 +405,11 @@ useEffect(() => {
     );
   }
 
- if (state === "camera") {
+  if (state === "camera") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-lg">
+
           <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-black">
             <video
               ref={videoRef}
@@ -405,9 +434,9 @@ useEffect(() => {
             <button
               disabled={isCapturing}
               onClick={startCountdown}
-              className={`w-20 h-20 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full hover:scale-110 active:scale-95 transition-all duration-200 shadow-lg flex items-center justify-center ${
+              className={w-20 h-20 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full hover:scale-110 active:scale-95 transition-all duration-200 shadow-lg flex items-center justify-center ${
                 isCapturing ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
-              }`}
+              }}
               aria-label="Take photo"
             >
               <Camera className="w-8 h-8 text-white" />
@@ -424,34 +453,37 @@ useEffect(() => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-lg space-y-8">
+
           <FilmStripPreview />
 
           <div className="flex justify-center space-x-4">
-            <button
-              onClick={downloadPhotos}
-              disabled={isDownloading}
-              className="group relative inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 rounded-full hover:scale-110 active:scale-95 transition-all duration-300 shadow-2xl hover:shadow-purple-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isDownloading ? (
-                <svg className="w-10 h-10 text-white animate-spin" viewBox="0 0 24 24" fill="none">
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v4l3.5-3.5L12 0v4a8 8 0 110 16v-4l-3.5 3.5L12 24v-4a8 8 0 01-8-8z"
-                  ></path>
-                </svg>
-              ) : (
-                <Download className="w-10 h-10 text-white relative z-10" />
-              )}
-            </button>
+           <button
+  onClick={downloadPhotos}
+  disabled={isDownloading}
+  className="group relative inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 rounded-full hover:scale-110 active:scale-95 transition-all duration-300 shadow-2xl hover:shadow-purple-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+>
+  {isDownloading ? (
+    <svg className="w-10 h-10 text-white animate-spin" viewBox="0 0 24 24" fill="none">
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+      ></circle>
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8v4l3.5-3.5L12 0v4a8 8 0 110 16v-4l-3.5 3.5L12 24v-4a8 8 0 01-8-8z"
+      ></path>
+    </svg>
+  ) : (
+    <Download className="w-10 h-10 text-white relative z-10" />
+  )}
+</button>
+
+            
           </div>
         </div>
       </div>
