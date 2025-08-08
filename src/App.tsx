@@ -208,7 +208,7 @@ const downloadPhotos = async () => {
       ctx.drawImage(img, photoX, photoY, photoWidth, photoHeight);
 
       // Draw the date in the white space below the photo (bottom-left)
-      const dateStr = `PB (${new Date(capturedPhotos[i].timestamp).toLocaleDateString()})`;
+      const dateStr = `Photo Booth (${new Date(capturedPhotos[i].timestamp).toLocaleDateString()})`;
 
       const fontSize = Math.floor(photoHeight * 0.035);
       ctx.font = `${fontSize}px monospace`;
@@ -218,10 +218,10 @@ const downloadPhotos = async () => {
       const padding = 6;
       const textWidth = ctx.measureText(dateStr).width;
       const textX = photoX + 4;
-      // Position text a few pixels above the bottom of the white space under photo
+   
       const textY = photoY + photoHeight + framePadding - 4;
 
-      // Draw subtle semi-transparent white background behind text for contrast
+
       ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
       ctx.fillRect(
         textX - padding / 2,
