@@ -35,7 +35,7 @@
     }
   }
 
-
+  /* Scrollbar styling */
   ::-webkit-scrollbar {
     width: 8px;
   }
@@ -52,7 +52,7 @@
     @apply bg-purple-500;
   }
 
-
+  /* Button focus styles */
   button:focus {
     outline: none;
   }
@@ -61,7 +61,7 @@
     @apply ring-4 ring-purple-500/50 ring-offset-2 ring-offset-purple-900;
   }
 
-
+  /* Pulse animation for buttons */
   .btn-pulse {
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
@@ -76,7 +76,7 @@
   }
 }
 
-
+/* Camera loading spinner */
 .camera-loading {
   position: relative;
 }
@@ -101,7 +101,7 @@
   }
 }
 
-
+/* Film strip styling */
 .film-strip {
   position: relative;
   background: linear-gradient(to bottom, #000000 0%, #050505 100%);
@@ -134,15 +134,17 @@
   top: 0;
 }
 
+/* Mobile adjustments */
 @media (max-width: 640px) {
   .shiny-text {
     font-size: 3rem;
   }
-
   .film-strip {
     max-width: 90vw;
   }
+}
 
+/* Reduce motion */
 @media (prefers-reduced-motion: reduce) {
   .shiny-text {
     animation: none;
@@ -157,7 +159,7 @@
   }
 }
 
-
+/* High contrast mode */
 @media (prefers-contrast: high) {
   .bg-gradient-to-br {
     background: #000 !important;
