@@ -16,6 +16,8 @@ function App() {
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isCapturing, setIsCapturing] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isFadingOut, setIsFadingOut] = useState(false);
+   
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -280,7 +282,12 @@ function App() {
     );
   };
 
-  const resetApp = () => {
+ const resetApp = () => {
+ 
+  setIsFadingOut(true);
+
+
+  setTimeout(() => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
@@ -289,7 +296,10 @@ function App() {
     setCapturedPhotos([]);
     setCountdown(null);
     setIsCapturing(false);
-  };
+    setIsFadingOut(false); 
+  }, 400); 
+};
+
 
   if (state === "landing") {
     return (
@@ -498,3 +508,9 @@ function App() {
 }
 
 export default App;
+
+
+
+
+
+
