@@ -360,17 +360,6 @@ function App() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-lg">
-         {!isCapturing && (
-  <div className="text-center mb-6">
-    <h2 className="text-2xl font-bold text-indigo-500 mb-2">
-      {photoMode === "single" ? "Get Ready" : "Get Ready"}
-    </h2>
-    <p className="text-indigo-500">
-      {photoMode === "triple" ? "📷" : "📷"}
-    </p>
-  </div>
-)}
-
 
           <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-black">
             <video
