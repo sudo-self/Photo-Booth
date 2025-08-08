@@ -232,10 +232,10 @@ function App() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-
-    setTimeout(() => {
+ setTimeout(() => {
       resetApp();
     }, 1000);
+
   } catch (err) {
     console.error("Download error:", err);
     alert("Download failed");
@@ -244,18 +244,6 @@ function App() {
   }
 };
 
-      
-      // Auto return to start after download
-      setTimeout(() => {
-        resetApp();
-      }, 1000);
-    } catch (err) {
-      console.error("Download error:", err);
-      alert("Download failed");
-    } finally {
-      setIsDownloading(false);
-    }
-  };
 
   // FilmStripPreview component
   const FilmStripPreview = () => (
