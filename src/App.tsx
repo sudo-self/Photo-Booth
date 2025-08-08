@@ -119,7 +119,7 @@ function App() {
     setIsCapturing(false);
   };
 
-  const downloadPhotos = async () => {
+const downloadPhotos = async () => {
   if (capturedPhotos.length === 0 || isDownloading) return;
   setIsDownloading(true);
   try {
@@ -203,33 +203,34 @@ function App() {
       });
 
       // Draw the photo
-      ctx.drawImage(
-        img,
-        holeSize + framePadding,
-        framePadding + i * (photoHeight + framePadding),
-        photoWidth,
-        photoHeight
-      );
+      const photoX = holeSize + framePadding;
+      const photoY = framePadding + i * (photoHeight + framePadding);
+      ctx.drawImage(img, photoX, photoY, photoWidth, photoHeight);
 
-      // Draw the date at top-left inside the white area, smaller and subtle
-      ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+      // Draw the date in the white space below the photo (bottom-left)
+      const dateStr = `PB (${new Date(capturedPhotos[i].timestamp).toLocaleDateString()})`;
+
       const fontSize = Math.floor(photoHeight * 0.035);
       ctx.font = `${fontSize}px monospace`;
       ctx.textAlign = "left";
-      ctx.textBaseline = "top";
+      ctx.textBaseline = "bottom";
 
-      const dateStr = `PB (${new Date(capturedPhotos[i].timestamp).toLocaleDateString()})`;
-
-      // Draw a subtle semi-transparent white background behind text for better contrast
       const padding = 6;
       const textWidth = ctx.measureText(dateStr).width;
-      const textX = holeSize + framePadding + 4;
-      const textY = framePadding + i * (photoHeight + framePadding) + 4;
+      const textX = photoX + 4;
+      // Position text a few pixels above the bottom of the white space under photo
+      const textY = photoY + photoHeight + framePadding - 4;
 
+      // Draw subtle semi-transparent white background behind text for contrast
       ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
-      ctx.fillRect(textX - padding / 2, textY - padding / 2, textWidth + padding, fontSize + padding / 1.5);
+      ctx.fillRect(
+        textX - padding / 2,
+        textY - fontSize - padding / 1.5,
+        textWidth + padding,
+        fontSize + padding / 1.5
+      );
 
-      // Draw the text over the background
+      // Draw the date text
       ctx.fillStyle = "#111";
       ctx.fillText(dateStr, textX, textY);
     }
@@ -252,6 +253,7 @@ function App() {
     setIsDownloading(false);
   }
 };
+
 
 
 
