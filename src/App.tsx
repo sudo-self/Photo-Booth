@@ -154,6 +154,12 @@ function App() {
       ctx.fillStyle = "white";
       ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, canvas.height);
 
+      // Draw top and bottom borders
+      const borderHeight = 8;
+      ctx.fillStyle = "#333";
+      ctx.fillRect(holeSize, 0, canvas.width - holeSize * 2, borderHeight); // Top border
+      ctx.fillRect(holeSize, canvas.height - borderHeight, canvas.width - holeSize * 2, borderHeight); // Bottom border
+
       // Draw film strip holes
       ctx.fillStyle = "#111";
       const holeSpacing = totalHeight / 6;
